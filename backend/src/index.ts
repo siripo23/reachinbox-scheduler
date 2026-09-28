@@ -8,20 +8,16 @@ dotenv.config();
 const PORT = process.env.PORT || 3001;
 
 async function bootstrap() {
-  console.log('Starting application...');
-
   try {
-    // Check Elasticsearch connection
     await checkElasticsearch();
-  } catch (error) {
-    console.warn('Elasticsearch might not be available:', error);
+  } catch {
+    console.warn('Elasticsearch not available, search will be disabled');
   }
 
-  // Setup BullMQ worker
   setupWorker();
 
   app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
   });
 }
 

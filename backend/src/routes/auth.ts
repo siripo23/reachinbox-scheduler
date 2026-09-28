@@ -18,12 +18,11 @@ router.post('/login', async (req, res) => {
   res.json({ user });
 });
 
-// Real Slack OAuth Flow
 router.get('/slack/callback', async (req, res) => {
-  const { code, state } = req.query; // state contains userId
+  const { code, state } = req.query;
 
   if (!code || !state) {
-    return res.status(400).send('Invalid request: Missing code or state');
+    return res.status(400).send('Missing code or state');
   }
 
   try {
@@ -32,31 +31,25 @@ router.get('/slack/callback', async (req, res) => {
         client_id: process.env.SLACK_CLIENT_ID,
         client_secret: process.env.SLACK_CLIENT_SECRET,
         code,
-        redirect_uri: 'http://localhost:3001/api/auth/slack/callback'
-      }
+        redirect_uri: 'http://localhost:3001/api/auth/slack/callback',
+      },
     });
 
     const data = response.data;
-    
+
     if (!data.ok) {
-      console.error('Slack OAuth Error:', data.error);
       return res.status(400).send(`Slack OAuth failed: ${data.error}`);
     }
 
-    // data.access_token is the bot token if scopes are requested for bot
-    const slackToken = data.access_token;
-    
-    // Store in DB
     await prisma.user.update({
       where: { id: String(state) },
-      data: { slackToken }
+      data: { slackToken: data.access_token },
     });
 
-    // Redirect back to frontend
     res.redirect('http://localhost:5173/');
   } catch (error) {
-    console.error('Slack OAuth request failed:', error);
-    res.status(500).send('Internal Server Error during Slack OAuth');
+    console.error('Slack OAuth error:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
 

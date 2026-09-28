@@ -15,7 +15,6 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// ── BullMQ Dashboard ─────────────────────────────────────────────────────────
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/queues');
 
@@ -25,8 +24,6 @@ createBullBoard({
 });
 
 app.use('/admin/queues', serverAdapter.getRouter());
-// ─────────────────────────────────────────────────────────────────────────────
-
 app.use('/api/campaigns', campaignRoutes);
 app.use('/api/auth', authRoutes);
 

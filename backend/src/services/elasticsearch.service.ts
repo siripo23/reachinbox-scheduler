@@ -9,27 +9,23 @@ export const esClient = new Client({
 
 export const checkElasticsearch = async () => {
   const health = await esClient.cluster.health();
-  console.log('Elasticsearch cluster health:', health.status);
+  console.log('Elasticsearch status:', health.status);
 };
 
 export const indexEmail = async (emailData: any) => {
-  try {
-    await esClient.index({
-      index: 'emails',
-      id: emailData.id,
-      document: {
-        emailAddress: emailData.emailAddress,
-        subject: emailData.subject,
-        body: emailData.body,
-        status: emailData.status,
-        sentAt: emailData.sentAt,
-        scheduledFor: emailData.scheduledFor,
-        campaignId: emailData.campaignId
-      },
-    });
-  } catch (error) {
-    console.error('Failed to index email in Elasticsearch:', error);
-  }
+  await esClient.index({
+    index: 'emails',
+    id: emailData.id,
+    document: {
+      emailAddress: emailData.emailAddress,
+      subject: emailData.subject,
+      body: emailData.body,
+      status: emailData.status,
+      sentAt: emailData.sentAt,
+      scheduledFor: emailData.scheduledFor,
+      campaignId: emailData.campaignId,
+    },
+  });
 };
 
 export const searchEmails = async (query: string) => {
@@ -44,8 +40,7 @@ export const searchEmails = async (query: string) => {
       },
     });
     return result.hits.hits.map((hit: any) => hit._source);
-  } catch (error) {
-    console.error('Search failed:', error);
+  } catch {
     return [];
   }
 };

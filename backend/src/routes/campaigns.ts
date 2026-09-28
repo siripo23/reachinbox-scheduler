@@ -21,7 +21,7 @@ router.post('/schedule', async (req, res) => {
         delaySeconds,
         hourlyLimit,
         userId,
-      }
+      },
     });
 
     const startMs = new Date(startTime).getTime();
@@ -32,25 +32,21 @@ router.post('/schedule', async (req, res) => {
         data: {
           emailAddress: emails[i],
           status: 'SCHEDULED',
-          scheduledFor: new Date(startMs + (i * delaySeconds * 1000)),
-          campaignId: campaign.id
-        }
+          scheduledFor: new Date(startMs + i * delaySeconds * 1000),
+          campaignId: campaign.id,
+        },
       });
 
-      const delayMs = Math.max(0, (startMs + (i * delaySeconds * 1000)) - nowMs);
-      
-      const jobId = await scheduleEmail({
-        scheduledEmailId: scheduledEmail.id,
-        to: emails[i],
-        subject,
-        body,
-        hourlyLimit,
-        userId
-      }, delayMs);
+      const delayMs = Math.max(0, startMs + i * delaySeconds * 1000 - nowMs);
+
+      const jobId = await scheduleEmail(
+        { scheduledEmailId: scheduledEmail.id, to: emails[i], subject, body, hourlyLimit, userId },
+        delayMs
+      );
 
       await prisma.scheduledEmail.update({
         where: { id: scheduledEmail.id },
-        data: { jobId: String(jobId) }
+        data: { jobId: String(jobId) },
       });
     }
 
@@ -64,12 +60,9 @@ router.post('/schedule', async (req, res) => {
 router.get('/scheduled/:userId', async (req, res) => {
   const { userId } = req.params;
   const emails = await prisma.scheduledEmail.findMany({
-    where: { 
-      campaign: { userId },
-      status: 'SCHEDULED'
-    },
+    where: { campaign: { userId }, status: 'SCHEDULED' },
     include: { campaign: true },
-    orderBy: { scheduledFor: 'asc' }
+    orderBy: { scheduledFor: 'asc' },
   });
   res.json(emails);
 });
@@ -77,12 +70,9 @@ router.get('/scheduled/:userId', async (req, res) => {
 router.get('/sent/:userId', async (req, res) => {
   const { userId } = req.params;
   const emails = await prisma.scheduledEmail.findMany({
-    where: { 
-      campaign: { userId },
-      status: { not: 'SCHEDULED' }
-    },
+    where: { campaign: { userId }, status: { not: 'SCHEDULED' } },
     include: { campaign: true },
-    orderBy: { sentAt: 'desc' }
+    orderBy: { sentAt: 'desc' },
   });
   res.json(emails);
 });
