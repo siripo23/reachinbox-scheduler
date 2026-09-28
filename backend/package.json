@@ -1,40 +1,41 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "ReachInbox Email Scheduler Backend",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon --exec ts-node src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev --name init",
+    "db:push": "prisma db push"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@elastic/elasticsearch": "^9.5.1",
-    "axios": "^1.20.0",
-    "bullmq": "^6.3.9",
-    "cors": "^2.8.6",
-    "csv-parser": "^3.2.1",
-    "dotenv": "^18.0.4",
-    "express": "^5.2.1",
-    "ioredis": "^6.0.0",
-    "multer": "^2.4.0",
-    "nodemailer": "^10.0.11",
-    "pg": "^8.23.0"
+    "@bull-board/api": "^9.10.1",
+    "@bull-board/express": "^9.10.1",
+    "@elastic/elasticsearch": "^8.15.0",
+    "@prisma/client": "5.22.0",
+    "axios": "^1.7.2",
+    "bullmq": "^5.12.12",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "ioredis": "^5.4.1",
+    "nodemailer": "^6.9.14"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/multer": "^2.2.0",
-    "@types/node": "^26.6.3",
-    "@types/nodemailer": "^8.0.2",
-    "nodemon": "^3.1.14",
-    "prisma": "^8.0.0-rc.17",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.0.0",
+    "@types/nodemailer": "^6.4.15",
+    "nodemon": "^3.1.4",
+    "prisma": "5.22.0",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "typescript": "^5.5.3"
   }
 }
